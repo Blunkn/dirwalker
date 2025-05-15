@@ -1,4 +1,5 @@
-# DirWalker 0.1.0
+# DirWalker 
+Version 0.2.0
 ---
 
 A simple recursive directory scanner and searcher.
@@ -29,10 +30,13 @@ N/A
 
 ## Roadmap
 ---
-- make scanning recursive, find a way to output a text visualisation of larger directories
-- make search function, make it a choice to search between file name or file extensions
+- find a way to have scan function output a text visualisation of larger directories
+- expand search function to be able to search extensions
 
 ## Version Control
 ---
+0.2.0 - additions
+- scanning is now recursive but can accummulate noise depending on size of subdirectories
+- search added
 
 0.1.0 - initial commit

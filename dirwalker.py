@@ -1,43 +1,73 @@
+# all of these libraries are native
 import os, fnmatch, sys, pathlib
 
 def match_name(name, pattern):
     """
-    helper function to match a filename
+    helper function to match a filename; CASE SENSITIVE
+
+    args:
+    name - name of the file to look up
+    pattern - unix style pattern to match against
+
+    returns:
+    bool on whether it matches
     """
     if fnmatch.fnmatchcase(name, pattern):
-        return 1
+        return True
     else:
-        return 0
+        return False
     
 
-def scan(path):
+def scan(fpath):
     """
     general directory scanner
+
+    args:
+    fpath - directory path to look into; uses working directory as default if not specified
+
+    returns:
+    N/A
+    it just prints stuff lol
     """
-    dirlst = []
-    filelst = []
-    with os.scandir(path) as i: # scandir returns an iterator
-        for j in i:
-            if not j.name.startswith('.') and j.is_dir(): # if not a dotfile and is a subdirectory,
-                dirlst.append(j.name)
-            if not j.name.startswith('.') and j.is_file(): # if not a dotfile and is a normal file,
-                filelst.append(j.name)
-    
-    print("Directories found:")
-    for i in dirlst:
-        print(i, sep='\n')
-    print("Files found:")
-    for i in filelst:
-        print(i, sep='\n')
-    print("\nScan finished\n")
+    for root, dirnames, fnames in os.walk(fpath, topdown=True):
+        print(f"Directories found in {root}:")
+        if len(os.listdir(root)) == 0 or len(fnames) == 0:
+            print("Directory is empty")
+        else:
+            print(dirnames)
+            print(f"Files found in {root}:")
+            print(fnames)
+
+def search(name):
+    """
+    file searcher for the current directory & subdirectories
+
+    args:
+    name - string for a specific input file name; exits to menu if not specified
+
+    returns:
+    N/A
+    it also just prints stuff
+    """
+    found = False
+    for root, dirnames, fnames in os.walk(os.getcwd(), topdown=True):
+        if name in str(fnames):
+            print(f"\nFile found in {root}, under {dirnames}")
+            found = True
+        else:
+            continue
+
+    if found == False:
+        print("Not found")
 
 def help():
     """display help"""
     txt = """
     DirWalker - Directory Searcher & Scanner
+    Version 0.2.0
 
     Usage:
-    1 - Scan a specified directory, or the current directory
+    1 - Scan a specified directory; script scans everything in current directory by default
     2 - Search for files in a specified directory, or the current directory
     3 - Print help
     4 - Exit
@@ -51,15 +81,25 @@ def menu():
     print("2 - Search files")
     print("3 - Help")
     print("4 - Exit")
-    return input("Select an option(1-4): ")
+    return input("Select an option (1 - 4): ")
 
 def main():
     while True:
         choice = menu().strip()
         if choice == '1':
-            scan(os.getcwd())
+            ans = input("Please input subdirectory to scan: ")
+            if len(ans) == 0:
+                scan(os.getcwd())
+            elif not (fnmatch.fnmatchcase(i, ans) for i in os.listdir(ans)):
+                print("Subdirectory not found")
+            else:
+                scan(ans)
         elif choice == '2':
-            pass
+            ans = input("Please input file name to find: ")
+            if len(ans) == 0:
+                print("\nInvalid option")
+            else:
+                search(ans)
         elif choice == '3':
             help()
         elif choice == '4':
